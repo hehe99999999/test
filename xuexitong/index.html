@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>个人空间</title>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header class="top-bar">
+        <div class="logo">重庆理工大学(学生)</div>
+        <div class="top-right">
+            <span class="invite">输入邀请码</span>
+            <!-- 点击头像进入账号管理 -->
+            <div class="user-info" onclick="switchToAccount()">
+                <img src="resource/头像.png" id="top-avatar" class="avatar-img" alt="头像">
+                <span>贺梓涵</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar" id="sidebar">
+            <div class="user-profile">
+                <img src="resource/头像.png" id="side-avatar" class="avatar-large" alt="头像">
+                <div class="username">贺梓涵</div>
+            </div>
+            
+            <ul class="menu-list" id="menu-list">
+                <!-- 首页 -->
+                <li class="active" data-title="首页" onclick="changeTab(this, '首页')">
+                    <img src="resource/首页.png" alt="首页"> 
+                    <span>首页</span>
+                </li>
+                <li data-title="常用" onclick="changeTab(this, '常用')">
+                    <img src="resource/常用.png" alt="常用"> 
+                    <span>常用</span>
+                </li>
+                <li data-title="应用中心" onclick="changeTab(this, '应用中心')">
+                    <img src="resource/应用中心.png" alt="应用中心"> 
+                    <span>应用中心</span>
+                </li>
+                <li data-title="课程" onclick="changeTab(this, '课程')">
+                    <img src="resource/课程.png" alt="课程"> 
+                    <span>课程</span>
+                </li>
+                <li data-title="微专业报名" onclick="changeTab(this, '微专业报名')">
+                    <img src="resource/微专业报名.png" alt="微专业报名"> 
+                    <span>微专业报名</span>
+                </li>
+                <li data-title="笔记" onclick="changeTab(this, '笔记')">
+                    <img src="resource/笔记.png" alt="笔记"> 
+                    <span>笔记</span>
+                </li>
+                <li data-title="云盘" onclick="changeTab(this, '云盘')">
+                    <img src="resource/云盘.png" alt="云盘"> 
+                    <span>云盘</span>
+                </li>
+            </ul>
+
+            <div class="collapse-btn" onclick="toggleSidebar()">
+                <i class="fas fa-angle-double-left" id="collapse-icon"></i>
+            </div>
+        </aside>
+
+        <!-- 右侧内容区 -->
+        <main class="content-area">
+            <!-- 面包屑导航 -->
+            <div class="breadcrumb" id="breadcrumb" style="display: none; padding: 15px 20px; font-weight: bold; color: #333; border-bottom: 1px solid #eee;">首页</div>
+            <iframe src="" id="main-frame" style="width: 100%; height: 100%; border: none;"></iframe>
+        </main>
+    </div>
+
+    <script>
+        // 初始化头像
+        window.onload = function() {
+            const savedAvatar = localStorage.getItem('userAvatar');
+            if (savedAvatar) {
+                document.getElementById('top-avatar').src = savedAvatar;
+                document.getElementById('side-avatar').src = savedAvatar;
+            }
+            // 默认加载首页
+            loadPlaceholder('首页');
+        };
+
+        // 监听头像更新消息
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'AVATAR_UPDATED') {
+                const newAvatar = event.data.avatarUrl;
+                document.getElementById('top-avatar').src = newAvatar;
+                document.getElementById('side-avatar').src = newAvatar;
+                localStorage.setItem('userAvatar', newAvatar);
+            }
+        });
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        // 切换到账号管理页面
+        function switchToAccount() {
+            // 移除侧边栏
+            document.querySelectorAll('.menu-list li').forEach(li => li.classList.remove('active'));
+            document.getElementById('breadcrumb').style.display = 'block';
+            document.getElementById('breadcrumb').innerText = '账号管理';
+            document.getElementById('main-frame').src = 'account/account.html';
+        }
+
+        // 点击侧边栏切换页面
+        function changeTab(element, title) {
+            document.querySelectorAll('.menu-list li').forEach(li => li.classList.remove('active'));
+            element.classList.add('active');
+            document.getElementById('breadcrumb').style.display = 'block';
+            document.getElementById('breadcrumb').innerText = title;
+        }
+
+        function loadPlaceholder(title) {
+            const iframe = document.getElementById('main-frame');
+            const doc = iframe.contentWindow.document;
+            
+            // 写入占位内容
+            doc.open();
+            doc.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <style>
+                        body { 
+                            display: flex; 
+                            justify-content: center; 
+                            align-items: center; 
+                            height: 100vh; 
+                            margin: 0; 
+                            font-family: sans-serif; 
+                            background-color: #f9f9f9;
+                        }
+                        .placeholder {
+                            text-align: center;
+                            color: #999;
+                        }
+                        .placeholder h1 {
+                            font-size: 32px;
+                            color: #3b5bd5;
+                            margin-bottom: 10px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="placeholder">
+                        <h1>${title} 页面</h1>
+                        <p>正在开发中，暂无具体内容...</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            doc.close();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Microsoft YaHei";
+}
+
+body {
+    padding: 25px;
+    color: #333;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+/* 弹窗 */
+.toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 2000;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* Tabs */
+.tabs-header {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 30px;
+}
+
+.tab-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #3b5bd5;
+}
+
+.tab-title i {
+    background: #3b5bd5;
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.tabs-nav {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.tabs-nav li {
+    padding: 10px 0;
+    cursor: pointer;
+    color: #666;
+    font-size: 15px;
+    position: relative;
+    transition: color 0.3s;
+}
+
+.tabs-nav li:hover {
+    color: #3b5bd5;
+}
+
+.tabs-nav li.active {
+    color: #333;
+    font-weight: bold;
+}
+
+.tabs-nav li.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #c00;
+}
+
+/* 内容区 */
+.tab-content {
+    display: none;
+    padding: 10px 0;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* 基本资料 */
+.form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.form-row>label:first-child {
+    width: 80px;
+    color: #666;
+}
+
+.radio-group {
+    display: flex;
+    gap: 15px;
+}
+
+.modify-link {
+    color: #3b5bd5;
+    text-decoration: none;
+    margin-left: 15px;
+    font-size: 13px;
+}
+
+.unit-list {
+    margin-top: 20px;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 20px;
+}
+
+.unit-item {
+    margin-bottom: 15px;
+}
+
+.unit-name {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.unit-desc {
+    font-size: 12px;
+    color: #999;
+}
+
+/* 修改头像 */
+.avatar-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#avatar-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #eee;
+}
+
+.btn-primary {
+    background: #3b5bd5;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-primary:hover {
+    background: #2a46b5;
+}
+
+/* 密码管理 */
+.pwd-form {
+    max-width: 400px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.input-group label {
+    width: 90px;
+    font-size: 14px;
+    color: #555;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.pwd-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+    padding-left: 90px;
+}
+
+.pwd-actions a {
+    color: #666;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.btn-secondary {
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* 注销 */
+.danger-zone {
+    border: 1px solid #ffcccc;
+    padding: 20px;
+    border-radius: 8px;
+    background: #fffcfc;
+}
+
+.danger-zone h3 {
+    color: #cc0000;
+    margin-bottom: 10px;
+}
+
+.danger-zone p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.btn-danger {
+    background: #cc0000;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-danger:hover {
+    background: #aa0000;
+}
+
+/* 弹窗 (注销) */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-box {
+    background: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    width: 400px;
+    text-align: center;
+}
+
+.modal-box h3 {
+    margin-bottom: 15px;
+}
+
+.modal-box p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.lang-option {
+    display: block;
+    margin-bottom: 10px;
+    cursor: pointer;
+    font-size: 15px;
+}

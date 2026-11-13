@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="account.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+
+    <!--弹窗 -->
+    <div id="toast" class="toast">操作提示</div>
+
+    <div class="tabs-header">
+        <div class="tab-title"><i class="fas fa-user-cog"></i> 账号管理</div>
+        <ul class="tabs-nav" id="tabs-nav">
+            <li class="active" data-target="tab-basic">基本资料</li>
+            <li data-target="tab-avatar">修改头像</li>
+            <li data-target="tab-password">密码管理</li>
+            <li data-target="tab-deactivate">注销账号</li>
+            <li data-target="tab-language">语言</li>
+        </ul>
+    </div>
+
+    <div class="tab-content active" id="tab-basic">
+        <div class="form-row"><label>姓名</label><span>贺梓涵</span></div>
+        <div class="form-row"><label>id</label><span>301692714</span></div>
+        <div class="form-row">
+            <label>性别</label>
+            <div class="radio-group">
+                <label><input type="radio" name="gender" value="male" checked> 男</label>
+                <label><input type="radio" name="gender" value="female"> 女</label>
+            </div>
+        </div>
+        <div class="form-row"><label>手机号</label><span>177****0053 <a href="javascript:void(0)"
+                    class="modify-link">修改</a></span></div>
+        <div class="form-row"><label>单位</label><a href="javascript:void(0)" class="modify-link">+ 添加单位</a></div>
+
+        <div class="unit-list">
+            <div class="unit-item">
+                <div class="unit-name">重庆理工大学</div>
+                <div class="unit-desc">学号/工号:12523020119</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-avatar">
+        <div class="avatar-container">
+            <img id="avatar-preview" src="../resource/头像.png" alt="头像预览">
+            <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
+            <button class="btn-primary" onclick="document.getElementById('avatar-upload').click()">选择图片</button>
+            <button class="btn-primary" id="btn-save-avatar">保存头像</button>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-password">
+        <div class="pwd-form">
+            <div class="input-group">
+                <label>旧密码：</label>
+                <input type="password" id="old-pwd" placeholder="请输入旧密码">
+            </div>
+            <div class="input-group">
+                <label>新密码：</label>
+                <input type="password" id="new-pwd" placeholder="请输入新密码">
+            </div>
+            <div class="input-group">
+                <label>确认新密码：</label>
+                <input type="password" id="confirm-pwd" placeholder="请再次输入新密码">
+            </div>
+            <div class="pwd-actions">
+                <button class="btn-primary" id="btn-modify-pwd">确认修改</button>
+                <a href="javascript:void(0)" id="btn-forgot-pwd">忘记密码？</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 忘记密码页 -->
+    <div class="tab-content" id="tab-forgot-pwd">
+        <div class="pwd-form">
+            <h3>找回密码</h3>
+            <div class="input-group">
+                <label>手机号：</label>
+                <input type="text" value="177****0053" disabled>
+            </div>
+            <div class="input-group">
+                <label>验证码：</label>
+                <input type="text" placeholder="模拟验证码">
+            </div>
+            <div class="pwd-actions">
+                <button class="btn-primary">重置密码</button>
+                <button class="btn-secondary" id="btn-back-pwd">返回</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-deactivate">
+        <div class="danger-zone">
+            <h3><i class="fas fa-exclamation-triangle"></i> 危险操作</h3>
+            <p>注销账号后，您的所有数据将被清空且无法恢复，请谨慎操作。</p>
+            <button class="btn-danger" id="btn-deactivate">注销账号</button>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-language">
+        <div class="language-selector">
+            <h3>选择语言</h3>
+            <label class="lang-option"><input type="radio" name="lang" value="zh" checked> 简体中文</label>
+            <label class="lang-option"><input type="radio" name="lang" value="en"> English</label>
+            <button class="btn-primary" id="btn-save-lang" style="margin-top: 20px;">保存并切换</button>
+        </div>
+    </div>
+
+    <!-- 注销二次确认弹窗 -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-box">
+            <h3>二次确认</h3>
+            <p>确定要注销当前账号吗？此操作不可逆！</p>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn-danger" onclick="confirmDeactivate()">确定注销</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 通用 Toast 提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {toast.classList.remove('show');}, 2500); // 2.5秒后自动消失
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabsNav = document.getElementById('tabs-nav');
+            const tabs = tabsNav.querySelectorAll('li');
+            const contents = document.querySelectorAll('.tab-content');
+            const forgotTab = document.getElementById('tab-forgot-pwd');
+            const pwdTab = document.getElementById('tab-password');
+
+            // 初始化头像预览
+            const savedAvatar = localStorage.getItem('userAvatar');
+            if (savedAvatar) document.getElementById('avatar-preview').src = savedAvatar;
+
+            // Tab 切换
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    const targetId = tab.getAttribute('data-target');
+                    if (targetId) document.getElementById(targetId).classList.add('active');
+                });
+            });
+
+            //  头像上传与保存同步
+            const avatarUpload = document.getElementById('avatar-upload');
+            const avatarPreview = document.getElementById('avatar-preview');
+            avatarUpload.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (event) {avatarPreview.src = event.target.result;}
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            document.getElementById('btn-save-avatar').addEventListener('click', () => {
+                const newAvatarUrl = avatarPreview.src;
+                // 将更新通知给父窗口
+                window.parent.postMessage({type: 'AVATAR_UPDATED', avatarUrl: newAvatarUrl}, '*');
+                showToast('头像保存成功！');
+            });
+
+            // 密码逻辑 
+            document.getElementById('btn-modify-pwd').addEventListener('click', () => {
+                const oldPwd = document.getElementById('old-pwd').value;
+                const newPwd = document.getElementById('new-pwd').value;
+                const confirmPwd = document.getElementById('confirm-pwd').value;
+
+                if (!oldPwd || !newPwd || !confirmPwd) return showToast('密码不能为空！');
+                if (oldPwd === newPwd) return showToast('新密码不能与旧密码相同！');
+                if (newPwd !== confirmPwd) return showToast('两次输入的新密码不一致！');
+
+                showToast('密码修改成功！');
+                document.getElementById('old-pwd').value = '';
+                document.getElementById('new-pwd').value = '';
+                document.getElementById('confirm-pwd').value = '';
+            });
+
+            // 忘记密码切换
+            document.getElementById('btn-forgot-pwd').addEventListener('click', () => {
+                contents.forEach(c => c.classList.remove('active'));
+                forgotTab.classList.add('active');
+                tabs.forEach(t => t.classList.remove('active'));
+            });
+
+            document.getElementById('btn-back-pwd').addEventListener('click', () => {
+                forgotTab.classList.remove('active');
+                pwdTab.classList.add('active');
+                tabs.forEach(t => {if (t.getAttribute('data-target') === 'tab-password') t.classList.add('active');});
+            });
+
+            // 注销弹窗
+            const modalOverlay = document.getElementById('modal-overlay');
+            document.getElementById('btn-deactivate').addEventListener('click', () => modalOverlay.style.display = 'flex');
+            window.closeModal = () => modalOverlay.style.display = 'none';
+            window.confirmDeactivate = () => {showToast('账号已注销 (演示)'); closeModal();}
+            modalOverlay.addEventListener('click', (e) => {if (e.target === modalOverlay) closeModal();});
+
+            // 语言切换
+            document.getElementById('btn-save-lang').addEventListener('click', () => {
+                const selectedLang = document.querySelector('input[name="lang"]:checked').value;
+                showToast(selectedLang === 'en' ? 'Language switched to English!' : '语言已切换！');
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                document.querySelector('[data-target="tab-basic"]').classList.add('active');
+                document.getElementById('tab-basic').classList.add('active');
+            });
+        });
+    </script>
+</body>
+
+</html>
